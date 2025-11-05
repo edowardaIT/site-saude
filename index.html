@@ -1,214 +1,121 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Assistente Virtual de Saúde — UBS</title>
-  <style>
-    :root{
-      --accent:#0066cc; --bg:#0f1720; --card:#0b1220; --muted:#9aa6b2;
-      color-scheme: dark;
-    }
-    html,body{height:100%;margin:0;background:linear-gradient(180deg,#071026 0%, #071a2a 100%);font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;color:#e6eef6}
-    .wrap{max-width:820px;margin:28px auto;padding:18px;}
-    header{display:flex;gap:12px;align-items:center;margin-bottom:18px}
-    .logo{width:60px;height:60px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#33aaff);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;font-size:20px}
-    h1{margin:0;font-size:20px}
-    p.lead{margin:0;color:var(--muted);font-size:13px}
-    .card{background:rgba(10,15,22,0.6);border-radius:12px;padding:16px;box-shadow:0 6px 18px rgba(2,6,23,0.6);min-height:420px;display:flex;flex-direction:column}
-    .messages{flex:1;overflow:auto;padding:8px;display:flex;flex-direction:column;gap:10px}
-    .msg{max-width:86%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);font-size:14px;line-height:1.35}
-    .msg.bot{align-self:flex-start;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)}
-    .msg.user{align-self:flex-end;background:linear-gradient(90deg, rgba(0,110,204,0.12), rgba(0,110,204,0.06));border:1px solid rgba(0,110,204,0.15)}
-    .options{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-    button.opt{background:transparent;color:var(--accent);border:1px solid rgba(51,170,255,0.12);padding:8px 10px;border-radius:10px;cursor:pointer}
-    .footer{display:flex;gap:8px;margin-top:12px;align-items:center}
-    input[type="text"]{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
-    button.send{padding:10px 12px;border-radius:10px;border:0;background:var(--accent);color:white;cursor:pointer}
-    .warning{background:linear-gradient(90deg,#7b1b1b,#bb2b2b);padding:10px;border-radius:10px;color:white;font-weight:600;margin-top:10px}
-    .muted{color:var(--muted);font-size:13px;margin-top:8px}
-    a.small{color:var(--accent);text-decoration:none;font-size:13px}
-    footer.small{color:var(--muted);font-size:12px;margin-top:12px;text-align:center}
-    /* Call button styling */
-    .call-btn { display:inline-block;padding:8px 10px;border-radius:8px;background:#bb2b2b;color:white;text-decoration:none;font-weight:700;margin-top:8px;border:1px solid rgba(255,255,255,0.06) }
-    .call-floating { position:fixed; right:18px; bottom:18px; background:#bb2b2b; color:white; padding:12px 14px; border-radius:999px; box-shadow:0 8px 24px rgba(0,0,0,0.4); text-decoration:none; font-weight:700; display:none; z-index:999; }
-    .call-floating span { margin-left:8px; font-weight:600; }
-    @media (max-width:520px){.wrap{padding:10px}.card{min-height:540px}}
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Assistente Virtual de Saúde — UBS</title>
+<link rel="icon" href="data:,">
+<style>
+  :root{
+    --bg:#071226;--panel:#0b1a2a;--muted:#98a6b3;--accent:#0ea5ff;--danger:#d23b3b;
+    --glass:rgba(255,255,255,0.03);--radius:14px;font-family:Inter,system-ui;
+  }
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,#04121b 0%,#071226 100%);
+    color:#e6eef6;font-size:15px;}
+  .container{max-width:980px;margin:28px auto;padding:18px;}
+  header{display:flex;gap:12px;align-items:center;margin-bottom:18px}
+  .logo{width:64px;height:64px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,var(--accent),#3ec7ff);font-weight:800;color:#012433;font-size:20px;
+    box-shadow:0 8px 30px rgba(14,165,255,0.08);}
+  h1{margin:0;font-size:20px}
+  p.lead{margin:0;color:var(--muted);font-size:13px}
+  .card{background:var(--glass);border-radius:var(--radius);padding:14px;
+    box-shadow:0 10px 35px rgba(2,6,23,0.6);
+    display:grid;grid-template-columns:1fr 320px;gap:16px;min-height:520px;}
+  .chat{display:flex;flex-direction:column;border-radius:10px;padding:12px;gap:12px}
+  .messages{flex:1;overflow:auto;padding:6px;display:flex;flex-direction:column;gap:12px}
+  .bubble{max-width:82%;padding:12px 14px;border-radius:12px;line-height:1.35}
+  .bot{align-self:flex-start;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)}
+  .user{align-self:flex-end;background:linear-gradient(180deg,rgba(14,165,255,0.12),rgba(14,165,255,0.06));border:1px solid rgba(14,165,255,0.12);color:#02223a}
+  .controls{padding-top:6px;border-top:1px dashed rgba(255,255,255,0.02);display:flex;flex-direction:column;gap:10px}
+  .options{display:flex;flex-wrap:wrap;gap:8px}
+  .opt-btn{padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--accent);cursor:pointer}
+  .input-row{display:flex;gap:8px}
+  input[type="text"]{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+  button.send{padding:10px 14px;border-radius:10px;border:0;background:var(--accent);color:#012433;font-weight:700;cursor:pointer}
+  .panel{background:var(--glass);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:12px}
+  .emergency{background:linear-gradient(90deg,var(--danger),#ff6b6b);padding:10px;border-radius:10px;color:white;font-weight:700;text-align:center;line-height:1.4}
+  .call-big{display:inline-block;padding:10px 12px;border-radius:10px;background:rgba(0,0,0,0.12);color:white;text-decoration:none;font-weight:700;border:1px solid rgba(255,255,255,0.08)}
+  .floating { position:fixed; right:18px; bottom:18px; background:var(--danger); color:white; padding:12px 14px; border-radius:999px; box-shadow:0 10px 30px rgba(0,0,0,0.45); text-decoration:none; font-weight:800; display:none; z-index:999; }
+  footer.small{color:var(--muted);font-size:13px;text-align:center;margin-top:12px}
+  @media (max-width:900px){.card{grid-template-columns:1fr;min-height:640px}}
+</style>
 </head>
 <body>
-  <div class="wrap">
+  <div class="container">
     <header>
       <div class="logo">UBS</div>
       <div>
         <h1>Assistente Virtual de Saúde — UBS</h1>
-        <p class="lead">Roteiro baseado no material do Chatbot UBS. Respostas automáticas e orientações iniciais.</p>
+        <p class="lead">Sistema de triagem inicial — respostas automáticas baseadas no roteiro.</p>
       </div>
     </header>
 
     <main class="card" role="main" aria-live="polite">
-      <div id="messages" class="messages" ></div>
-
-      <div id="controls" style="margin-top:8px">
-        <div id="options" class="options" aria-hidden="false"></div>
-        <div class="footer">
-          <input id="userInput" type="text" placeholder="Escreva sua pergunta (opcional)..." />
-          <button id="sendBtn" class="send">Enviar</button>
+      <section class="chat" aria-label="Chat">
+        <div class="messages" id="messages"></div>
+        <div class="controls">
+          <div class="options" id="options"></div>
+          <div class="input-row">
+            <input id="userInput" type="text" placeholder="Digite algo..." />
+            <button id="sendBtn" class="send">Enviar</button>
+          </div>
+          <small>Se for emergência real, ligue para SAMU: <strong>192</strong>.</small>
         </div>
-        <div id="after" class="muted">Se for emergência real, ligue para SAMU: <strong>192</strong> — ou procure o pronto-socorro mais próximo.</div>
-      </div>
+      </section>
+
+      <aside class="panel">
+        <h3>Contatos úteis</h3>
+        <div>SAMU: <strong>192</strong></div>
+        <div class="emergency" id="panelEmergency">Nenhuma emergência detectada</div>
+        <a id="callPanel" class="call-big" href="tel:192" aria-hidden="true">📞 Ligar 192 (SAMU)</a>
+      </aside>
     </main>
 
-    <footer class="small">Construído a partir do roteiro entregue no PDF.</footer>
+    <footer class="small">
+      Pronto Atendimento 24h — Rua L-2, 190, Interlagos, Paraíso do Tocantins |
+      Hospital Regional — Rua 03, Setor Aeroporto.
+    </footer>
   </div>
 
-  <!-- Floating call button (appears during emergency) -->
-  <a id="floatingCall" class="call-floating" href="tel:192" aria-hidden="true" title="Ligar 192">
-    📞 <span>Ligar 192</span>
-  </a>
+  <a id="floatingCall" class="floating" href="tel:192" aria-hidden="true" title="Ligar 192">📞 Ligar 192</a>
 
 <script>
-const MESSAGES = document.getElementById('messages');
-const OPTIONS = document.getElementById('options');
-const INPUT = document.getElementById('userInput');
-const SEND = document.getElementById('sendBtn');
-const FLOAT = document.getElementById('floatingCall');
+const M=document.getElementById('messages');
+const O=document.getElementById('options');
+const I=document.getElementById('userInput');
+const S=document.getElementById('sendBtn');
+const PE=document.getElementById('panelEmergency');
+const CP=document.getElementById('callPanel');
+const F=document.getElementById('floatingCall');
 
-function botMsg(html){
-  const d = document.createElement('div'); d.className='msg bot';
-  d.innerHTML = html;
-  MESSAGES.appendChild(d);
-  MESSAGES.scrollTop = MESSAGES.scrollHeight;
-  return d;
-}
-function userMsg(text){
-  const d = document.createElement('div'); d.className='msg user';
-  d.textContent = text;
-  MESSAGES.appendChild(d);
-  MESSAGES.scrollTop = MESSAGES.scrollHeight;
-  return d;
-}
-function clearOptions(){ OPTIONS.innerHTML = ''; }
-function setOptions(arr){
-  clearOptions();
-  arr.forEach(opt=>{
-    const b = document.createElement('button');
-    b.className='opt';
-    b.textContent = opt.label;
-    b.onclick = ()=> selectOption(opt);
-    OPTIONS.appendChild(b);
-  });
-}
+function msg(t,c='bot'){const d=document.createElement('div');d.className='bubble '+c;d.innerHTML=t;M.appendChild(d);M.scrollTop=M.scrollHeight;}
+function user(t){msg(t,'user');}
+function setOpts(a){O.innerHTML='';if(!a)return;a.forEach(o=>{const b=document.createElement('button');b.className='opt-btn';b.textContent=o.label;b.onclick=()=>sel(o.id,o.label);O.appendChild(b);});}
+function emergency(on){
+ if(on){
+  PE.innerHTML='🚨 <b>EMERGÊNCIA DETECTADA</b><br>Ligue para <b>SAMU: 192</b><br><small>Pronto Atendimento 24h — Rua L-2, 190, Interlagos<br>Hospital Regional — Rua 03, Setor Aeroporto</small>';
+  CP.style.display='inline-block';F.style.display='inline-block';
+ } else {
+  PE.textContent='Nenhuma emergência detectada';CP.style.display='none';F.style.display='none';
+ }}
 
-function emergencyNotice(placeText){
-  const warn = document.createElement('div');
-  warn.className='warning';
-  warn.innerHTML = placeText + '<br><a class="call-btn" href="tel:192">📞 Ligar 192 (SAMU)</a>';
-  MESSAGES.appendChild(warn);
-  MESSAGES.scrollTop = MESSAGES.scrollHeight;
-  // show floating call button for convenience
-  FLOAT.style.display = 'inline-block';
-  FLOAT.setAttribute('aria-hidden','false');
-}
-
-/* Texts adapted from original PDF */
-const TEXT = {
-  welcome: `👋 Olá, seja bem-vindo(a)! Eu sou assistente virtual de saúde. Para começar, escolha um tema:`,
-  kidneys_q1: `Você está apresentando dor lombar intensa, em cólica, que pode irradiar para abdome inferior ou região genital?`,
-  kidneys_severity: `Você apresenta algum destes sinais de gravidade?<ul>
-    <li>Febre (&gt; 38ºC)</li>
-    <li>Náuseas ou vômitos persistentes</li>
-    <li>Dificuldade ou impossibilidade de urinar</li>
-    <li>Sangue visível na urina</li>
-    <li>Dor que não melhora com analgésicos</li>
-  </ul>`,
-  kidneys_no_emergency: `O quadro pode ser cólica renal sem complicação.<br><strong>Recomendações:</strong> hidratação (se permitido), analgésicos simples e procurar avaliação médica para exames de imagem. Volte ao pronto-socorro se piorar.`,
-  diabetes_intro: `Você já tem diagnóstico de diabetes?`,
-  diabetes_symptoms: `Está sentindo tontura, fraqueza, visão embaçada ou muita sede?`,
-  diabetes_hypo_explain: `<strong>Hipoglicemia leve:</strong> fome, tremores, suor frio — trate com 15 g de carboidrato de ação rápida (ex: 3 balinhas ou 1 copo de suco). Espere 15 minutos e reavalie.`,
-  diabetes_hypo_severe: `<strong>Hipoglicemia grave:</strong> tontura intensa, perda de consciência. Se inconsciente, é emergência: ligue 192.`,
-  venom_intro: `Você sofreu acidente envolvendo cobra, serpente, escorpião ou outro animal peçonhento?`,
-  venom_general: `Em caso de acidente com animal peçonhento: não faça garrote, torniquete, sucção ou incisão no local. Procure atendimento.`,
-  contact_info: `Contatos úteis: SAMU — <strong>192</strong>.`
+const FLOW={
+ start:{t:'👋 Olá! Eu sou o assistente virtual da UBS. Escolha um tema:',o:[{id:'kid',label:'Problemas nos rins'},{id:'dia',label:'Diabetes / Hipoglicemia'},{id:'ven',label:'Animais peçonhentos'}]},
+ kid:{t:'Você tem dor lombar intensa ou cólica?',o:[{id:'kid_yes',label:'Sim'},{id:'kid_no',label:'Não'}]},
+ kid_yes:{t:'Há sinais de gravidade (febre, vômitos, sangue na urina, dor incontrolável)?',o:[{id:'em',label:'Sim'},{id:'ok',label:'Não'}]},
+ em:{t:'🚨 Procure atendimento imediato ou ligue 192.<br><small>Pronto Atendimento 24h — Rua L-2, 190, Interlagos<br>Hospital Regional — Rua 03, Setor Aeroporto</small>',em:true},
+ ok:{t:'Pode ser cólica renal sem complicação. Mantenha hidratação e procure avaliação médica.',o:[{id:'start',label:'Voltar ao início'}]},
+ dia:{t:'Tem diagnóstico de diabetes?',o:[{id:'d_yes',label:'Sim'},{id:'d_no',label:'Não'}]},
+ d_yes:{t:'Tem sintomas como fraqueza, tontura, suor frio?',o:[{id:'d_em',label:'Sim'},{id:'ok',label:'Não'}]},
+ d_em:{t:'Pode ser hipoglicemia! Tome carboidrato rápido (suco/açúcar) e reavalie. Se piorar, ligue 192.',em:false,o:[{id:'start',label:'Voltar'}]},
+ ven:{t:'Houve picada de cobra, escorpião ou outro animal?',o:[{id:'v_yes',label:'Sim'},{id:'start',label:'Não'}]},
+ v_yes:{t:'Classifique: leve, moderado ou grave?',o:[{id:'em',label:'Grave'},{id:'em',label:'Moderado'},{id:'ok',label:'Leve'}]},
 };
 
-const NODES = {
-  start: { text: TEXT.welcome, options:[
-    {id:'kidneys', label:'Problemas nos rins (Litíase)'},
-    {id:'diabetes', label:'Diabetes (Hipoglicemia)'},
-    {id:'venom', label:'Urgência / Animais peçonhentos'}
-  ]},
-  kidneys: { text: TEXT.kidneys_q1, options:[{id:'kidneys_yes',label:'Sim'},{id:'kidneys_no',label:'Não'}] },
-  kidneys_yes: { text: TEXT.kidneys_severity, options:[{id:'kidneys_emergency',label:'Tenho sinais de gravidade'},{id:'kidneys_no_emergency',label:'Não tenho sinais'}] },
-  kidneys_emergency: { text: 'Isso é uma emergência! Procure atendimento imediatamente. ' + TEXT.contact_info, onEnter: ()=> emergencyNotice('<strong>EMERGÊNCIA:</strong> Procure atendimento agora!') , options:[{id:'end',label:'Entendi'}] },
-  kidneys_no_emergency: { text: TEXT.kidneys_no_emergency, options:[{id:'k_history',label:'Já tive pedra nos rins'},{id:'k_first',label:'Primeira vez'}] },
-  k_history: { text: 'Risco de recorrência. Acompanhamento médico e exames são importantes.', options:[{id:'end',label:'Ok'}] },
-  k_first: { text: 'Mesmo na primeira vez, procure avaliação médica e exames.', options:[{id:'end',label:'Ok'}] },
-
-  diabetes: { text: TEXT.diabetes_intro, options:[{id:'diab_yes',label:'Sim'},{id:'diab_no',label:'Não'}] },
-  diab_yes: { text: TEXT.diabetes_symptoms, options:[{id:'diab_symp_yes',label:'Tenho sintomas'},{id:'diab_symp_no',label:'Não tenho'}] },
-  diab_symp_yes: { text: 'Esses sintomas podem indicar alteração da glicose. ' + TEXT.diabetes_hypo_explain, options:[{id:'end',label:'Entendi'}] },
-  diab_symp_no: { text: 'Mantenha medicação, alimentação equilibrada e atividade física.', options:[{id:'end',label:'Voltar ao início'}] },
-  diab_no: { text: 'Sinais de alerta: sede excessiva, poliúria, perda de peso. Procure avaliação médica se houver suspeita.', options:[{id:'end',label:'Entendi'}] },
-
-  venom: { text: TEXT.venom_intro, options:[{id:'venom_yes',label:'Sim'},{id:'venom_no',label:'Não'}] },
-  venom_yes: { text: TEXT.venom_general, options:[{id:'venom_identify',label:'Consigo identificar'},{id:'venom_not_identify',label:'Não sei identificar'}] },
-  venom_identify: { text: 'Classifique o acidente: leve, moderado ou grave.', options:[{id:'venom_grave',label:'Grave'},{id:'venom_moderate',label:'Moderado'},{id:'venom_mild',label:'Leve'}] },
-  venom_grave: { text: 'Isso é emergência! ' + TEXT.contact_info, onEnter: ()=> emergencyNotice('<strong>EMERGÊNCIA:</strong> Acidente grave. Procure atendimento imediato.'), options:[{id:'end',label:'Entendi'}] },
-  venom_moderate: { text: 'Procure atendimento o quanto antes. ' + TEXT.contact_info, onEnter: ()=> emergencyNotice('Procure atendimento urgente.'), options:[{id:'end',label:'Entendi'}] },
-  venom_mild: { text: 'Procure o pronto-socorro mais próximo se houver dor ou inchaço. ' + TEXT.contact_info, onEnter: ()=> emergencyNotice('Urgência: procure avaliação.'), options:[{id:'end',label:'Entendi'}] },
-  venom_not_identify: { text: 'Mantenha observação e procure atendimento se houver sinais sistêmicos. ' + TEXT.contact_info, options:[{id:'end',label:'Entendi'}] },
-
-  end: { text: 'Se quiser conversar sobre outro tema, posso voltar ao início.', options:[{id:'start',label:'Voltar ao início'},{id:'contact',label:'Ver contatos úteis'}] },
-  contact: { text: TEXT.contact_info, options:[{id:'start',label:'Voltar ao início'}] }
-};
-
-function selectOption(opt){
-  userMsg(opt.label || opt);
-  clearOptions();
-  const nodeKey = opt.id || opt;
-  const node = NODES[nodeKey];
-  if(!node) return;
-  if(node.onEnter) node.onEnter();
-  botMsg(node.text);
-  if(node.options && node.options.length) setOptions(node.options);
-  else clearOptions();
-}
-
-function start(){
-  MESSAGES.innerHTML='';
-  FLOAT.style.display='none';
-  FLOAT.setAttribute('aria-hidden','true');
-  const n = NODES.start;
-  botMsg(n.text);
-  setOptions(n.options);
-}
+function sel(id,label){user(label);const n=FLOW[id]||FLOW.start;msg(n.t);emergency(!!n.em);setOpts(n.o);}
+function start(){M.innerHTML='';emergency(false);msg(FLOW.start.t);setOpts(FLOW.start.o);}
 start();
-
-SEND.onclick = ()=>{
-  const text = INPUT.value.trim();
-  if(!text) return;
-  userMsg(text);
-  INPUT.value='';
-  const t = text.toLowerCase();
-  if(t.includes('rim')||t.includes('pedra')||t.includes('litíase')||t.includes('dor lombar')){
-    selectOption({id:'kidneys',label:'Problemas nos rins'});
-    return;
-  }
-  if(t.includes('diabet')||t.includes('glic')||t.includes('hipoglic')||t.includes('hiper')){
-    selectOption({id:'diabetes',label:'Diabetes'});
-    return;
-  }
-  if(t.includes('cobra')||t.includes('picada')||t.includes('escorpi')||t.includes('veneno')||t.includes('animal')){
-    selectOption({id:'venom',label:'Animais peçonhentos'});
-    return;
-  }
-  botMsg('Desculpe, não entendi totalmente — escolha uma opção abaixo ou escreva palavras-chave como "diabetes", "cobra", "rim".');
-  setOptions(NODES.start.options);
-};
-
-INPUT.addEventListener('keydown', (e)=>{ if(e.key==='Enter') SEND.click(); });
-
 </script>
 </body>
 </html>
