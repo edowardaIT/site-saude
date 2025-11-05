@@ -1,1 +1,89 @@
-<!doctype html><html><body><h1>Assistente Virtual de Saúde — UBS</h1><p>Versão final pronta.</p></body></html>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Assistente Virtual de Saúde — UBS</title>
+<link rel="icon" href="data:,">
+<style>
+:root{
+  --bg:#f8f9fa;
+  --card:#ffffff;
+  --accent:#0b76d1;
+  --danger:#c22b2b;
+  --text:#0b2540;
+  --muted:#6b7280;
+  font-family:Inter,system-ui;
+}
+body{background:var(--bg);color:var(--text);margin:0;font-size:15px;}
+.container{max-width:980px;margin:30px auto;padding:20px;}
+header{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
+.logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#3bb8ff);color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;}
+.card{background:var(--card);border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.05);padding:20px;display:grid;grid-template-columns:1fr 320px;gap:20px;min-height:560px;}
+.chat{display:flex;flex-direction:column;gap:12px;}
+.messages{flex:1;overflow:auto;display:flex;flex-direction:column;gap:12px;}
+.bubble{padding:12px 14px;border-radius:12px;background:#f1f5f9;border:1px solid #e2e8f0;max-width:85%;}
+.options{display:flex;flex-wrap:wrap;gap:10px;}
+.btn{padding:10px 14px;border:1px solid var(--accent);border-radius:8px;background:white;color:var(--accent);font-weight:600;cursor:pointer;}
+.btn:hover{background:#eaf3ff;}
+.panel{background:var(--card);border-radius:10px;padding:14px;box-shadow:0 4px 16px rgba(0,0,0,0.04);display:flex;flex-direction:column;gap:12px;}
+.emergency{background:linear-gradient(90deg,var(--danger),#ff6b6b);color:white;padding:12px;border-radius:10px;font-weight:700;display:none;}
+.floating{position:fixed;right:18px;bottom:18px;background:var(--danger);color:white;padding:12px 14px;border-radius:999px;font-weight:700;text-decoration:none;display:none;}
+footer{font-size:13px;color:var(--muted);margin-top:10px;text-align:center;}
+@media(max-width:900px){.card{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="logo">UBS</div>
+    <div>
+      <h1>Assistente Virtual de Saúde — UBS</h1>
+      <p style="color:var(--muted)">Triagem automática — utilize os botões abaixo.</p>
+    </div>
+  </header>
+
+  <main class="card">
+    <section class="chat">
+      <div id="messages" class="messages"></div>
+      <div id="options" class="options"></div>
+    </section>
+    <aside class="panel">
+      <h3>Contatos e Endereços</h3>
+      <p><strong>SAMU:</strong> 192<br>
+      <strong>Pronto Atendimento 24h:</strong> Rua L-2, 190, Interlagos, Paraíso do Tocantins<br>
+      <strong>Hospital Regional:</strong> Rua 03, Setor Aeroporto</p>
+      <div id="emergency" class="emergency">🚨 EMERGÊNCIA DETECTADA — Ligue 192</div>
+    </aside>
+  </main>
+
+  <footer>Se for emergência real, ligue imediatamente para SAMU: 192</footer>
+</div>
+<a id="callBtn" class="floating" href="tel:192">📞 Ligar 192</a>
+
+<script>
+const msgBox=document.getElementById('messages');
+const opts=document.getElementById('options');
+const emer=document.getElementById('emergency');
+const callBtn=document.getElementById('callBtn');
+function msg(t){const d=document.createElement('div');d.className='bubble';d.innerHTML=t;msgBox.appendChild(d);msgBox.scrollTop=msgBox.scrollHeight;}
+function setOpts(a){opts.innerHTML='';a.forEach(o=>{const b=document.createElement('button');b.className='btn';b.textContent=o.label;b.onclick=()=>sel(o.id);opts.appendChild(b);});}
+function emergency(on){emer.style.display=on?'block':'none';callBtn.style.display=on?'inline-block':'none';}
+const flow={
+ start:{t:'👋 Olá! Eu sou o Assistente Virtual de Saúde da UBS.<br>Selecione um tema para iniciar:',o:[{id:'rins',label:'💧 Problemas nos rins'},{id:'diab',label:'🧠 Diabetes / Hipoglicemia'},{id:'ven',label:'🐍 Animais peçonhentos'}]},
+ rins:{t:'Você apresenta dor intensa, febre ou sangue na urina?',o:[{id:'rinsE',label:'Sim'},{id:'rinsN',label:'Não'}]},
+ rinsE:{t:'🚨 Emergência! Procure atendimento imediato ou ligue 192.<br><strong>Endereços:</strong><br>Pronto Atendimento 24h — Rua L-2, 190, Interlagos<br>Hospital Regional — Rua 03, Setor Aeroporto',em:true,o:[{id:'start',label:'Voltar ao início'}]},
+ rinsN:{t:'Recomendações:<br>- Hidrate-se bem.<br>- Analgésicos simples se indicados.<br>- Procure consulta médica para investigação.<br>- Se surgirem febre, vômitos ou dor intensa, busque atendimento.',o:[{id:'start',label:'Voltar ao início'}]},
+ diab:{t:'Você tem sintomas como tontura, fraqueza, suor frio ou confusão?',o:[{id:'diabS',label:'Sim'},{id:'diabN',label:'Não'}]},
+ diabS:{t:'Pode ser hipoglicemia!<br>- Tome 1 copo de suco ou 1 colher de açúcar dissolvido em água.<br>- Reavalie em 15 minutos.<br>- Se não melhorar, ligue 192 ou vá ao hospital.',o:[{id:'start',label:'Voltar ao início'}]},
+ diabN:{t:'Mantenha dieta e medicação conforme orientação médica.<br>Se sentir mal-estar, procure atendimento médico.',o:[{id:'start',label:'Voltar ao início'}]},
+ ven:{t:'Ocorreu picada de cobra, escorpião ou outro animal?',o:[{id:'venS',label:'Sim'},{id:'venN',label:'Não'}]},
+ venS:{t:'🚨 Emergência!<br>- Lave o local com água e sabão.<br>- Não faça torniquete nem cortes.<br>- Mantenha o membro imóvel e ligue 192.<br>Pronto Atendimento 24h — Rua L-2, 190, Interlagos<br>Hospital Regional — Rua 03, Setor Aeroporto',em:true,o:[{id:'start',label:'Voltar ao início'}]},
+ venN:{t:'Evite contato com animais peçonhentos. Em caso de acidente, procure atendimento médico.',o:[{id:'start',label:'Voltar ao início'}]}
+};
+function sel(id){const n=flow[id];msg(n.t);emergency(!!n.em);setOpts(n.o);}
+function start(){msgBox.innerHTML='';emergency(false);msg(flow.start.t);setOpts(flow.start.o);}
+start();
+</script>
+</body>
+</html>

@@ -1,20 +1,13 @@
-# Assistente Virtual de Saúde — UBS (site estático)
+# Assistente Virtual de Saúde — UBS
 
-Este é um site **single-page** que implementa um fluxo de triagem simples (baseado no PDF fornecido) para:
-- Problemas nos rins (litíase)
-- Diabetes (hipoglicemia)
-- Acidentes com animais peçonhentos
+Versão final do chatbot com:
+- Fundo off-white
+- Interface por botões
+- Recomendações completas para rins, diabetes e animais peçonhentos
+- Botão 📞 Ligar 192 e endereços de emergência
 
-Principais características:
-- 100% cliente — não requer servidor, Node.js ou VPS.
-- Botão **📞 Ligar 192 (SAMU)** aparece automaticamente em casos classificados como emergência e também há um botão flutuante para ligar rapidamente.
-- Pronto para deploy em **GitHub Pages / Netlify / Cloudflare Pages**.
-
-## Como usar
-1. Baixe e extraia os arquivos.
-2. Coloque os arquivos em um repositório GitHub ou suba para Netlify/Cloudflare Pages.
-3. Para GitHub Pages: crie um repositório, adicione `index.html` no branch `main` e ative Pages.
-
-## Observações e melhorias
-- Adicionar gravação de conversas (Google Sheets / Airtable) caso deseje armazenar históricos.
-- Substituir os textos por versões oficiais / revisar conteúdo médico com equipe responsável.
+## Publicar no GitHub Pages
+1. Crie um repositório público no GitHub (ex: chatbot-ubs).
+2. Envie o arquivo index.html.
+3. Vá em Settings → Pages → selecione "Deploy from a branch" e salve.
+4. Após 1 minuto, acesse: https://seu-usuario.github.io/chatbot-ubs/
