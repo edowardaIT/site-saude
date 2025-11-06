@@ -1,88 +1,354 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Assistente Virtual de Saúde — UBS</title>
 <link rel="icon" href="data:,">
 <style>
 :root{
-  --bg:#f8f9fa;
+  --bg:#f8fafc; /* off-white */
   --card:#ffffff;
   --accent:#0b76d1;
   --danger:#c22b2b;
-  --text:#0b2540;
+  --text:#052033;
   --muted:#6b7280;
-  font-family:Inter,system-ui;
+  --radius:12px;
+  --shadow: 0 8px 30px rgba(15,23,42,0.06);
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
 }
-body{background:var(--bg);color:var(--text);margin:0;font-size:15px;}
-.container{max-width:980px;margin:30px auto;padding:20px;}
-header{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
-.logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#3bb8ff);color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;}
-.card{background:var(--card);border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,0.05);padding:20px;display:grid;grid-template-columns:1fr 320px;gap:20px;min-height:560px;}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;}
+.container{max-width:1000px;margin:28px auto;padding:20px;}
+header{display:flex;gap:14px;align-items:center;margin-bottom:18px;}
+.logo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#3ec7ff);color:white;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;box-shadow:var(--shadow)}
+h1{margin:0;font-size:20px}
+.lead{margin:0;color:var(--muted);font-size:13px}
+
+/* card */
+.card{background:var(--card);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);display:grid;grid-template-columns:1fr 360px;gap:18px;min-height:640px;overflow:hidden;}
 .chat{display:flex;flex-direction:column;gap:12px;}
-.messages{flex:1;overflow:auto;display:flex;flex-direction:column;gap:12px;}
-.bubble{padding:12px 14px;border-radius:12px;background:#f1f5f9;border:1px solid #e2e8f0;max-width:85%;}
-.options{display:flex;flex-wrap:wrap;gap:10px;}
-.btn{padding:10px 14px;border:1px solid var(--accent);border-radius:8px;background:white;color:var(--accent);font-weight:600;cursor:pointer;}
-.btn:hover{background:#eaf3ff;}
-.panel{background:var(--card);border-radius:10px;padding:14px;box-shadow:0 4px 16px rgba(0,0,0,0.04);display:flex;flex-direction:column;gap:12px;}
-.emergency{background:linear-gradient(90deg,var(--danger),#ff6b6b);color:white;padding:12px;border-radius:10px;font-weight:700;display:none;}
-.floating{position:fixed;right:18px;bottom:18px;background:var(--danger);color:white;padding:12px 14px;border-radius:999px;font-weight:700;text-decoration:none;display:none;}
-footer{font-size:13px;color:var(--muted);margin-top:10px;text-align:center;}
-@media(max-width:900px){.card{grid-template-columns:1fr;}}
+.messages{flex:1;overflow:auto;padding:10px;display:flex;flex-direction:column;gap:12px}
+.bubble{max-width:86%;padding:13px 14px;border-radius:12px;background:#f1f5f9;border:1px solid #e6eef7;line-height:1.45}
+.bubble.bot{align-self:flex-start}
+.bubble.user{align-self:flex-end;background:linear-gradient(180deg,#e6f6ff,#ffffff);border:1px solid rgba(11,118,209,0.08);color:#03223b}
+
+/* options */
+.options{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.btn{padding:10px 14px;border-radius:10px;border:1px solid rgba(11,118,209,0.12);background:white;color:var(--accent);font-weight:700;cursor:pointer}
+.btn.secondary{border:1px solid rgba(0,0,0,0.06);color:var(--text);background:#fbfeff}
+.btn.warn{background:linear-gradient(90deg,var(--danger),#ff706e);color:white;border:0}
+
+/* panel */
+.panel{background:linear-gradient(180deg,#ffffff,#fbfeff);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:12px;border:1px solid rgba(2,6,23,0.03)}
+.panel h3{margin:0;font-size:16px}
+.info{font-size:14px;color:var(--muted);line-height:1.45}
+
+/* emergency */
+.emergency{background:linear-gradient(90deg,var(--danger),#ff6b6b);padding:12px;border-radius:10px;color:white;font-weight:800;line-height:1.3;display:none}
+.call{display:inline-block;padding:10px 12px;border-radius:10px;background:#04293b;color:white;text-decoration:none;font-weight:800}
+
+/* floating call */
+.floating{position:fixed;right:18px;bottom:18px;background:var(--danger);color:white;padding:12px 14px;border-radius:999px;font-weight:800;text-decoration:none;display:none;z-index:999}
+
+/* footer */
+.footer{font-size:13px;color:var(--muted);text-align:center;margin-top:12px}
+
+/* responsive */
+@media (max-width:980px){.card{grid-template-columns:1fr;min-height:760px}.panel{order:2}}
 </style>
 </head>
 <body>
-<div class="container">
-  <header>
-    <div class="logo">UBS</div>
-    <div>
-      <h1>Assistente Virtual de Saúde — UBS</h1>
-      <p style="color:var(--muted)">Triagem automática — utilize os botões abaixo.</p>
-    </div>
-  </header>
+  <div class="container">
+    <header>
+      <div class="logo">UBS</div>
+      <div>
+        <h1>Assistente Virtual de Saúde — UBS</h1>
+        <p class="lead">Triagem inicial automática — escolha as opções com botões (sem digitação).</p>
+      </div>
+    </header>
 
-  <main class="card">
-    <section class="chat">
-      <div id="messages" class="messages"></div>
-      <div id="options" class="options"></div>
-    </section>
-    <aside class="panel">
-      <h3>Contatos e Endereços</h3>
-      <p><strong>SAMU:</strong> 192<br>
-      <strong>Pronto Atendimento 24h:</strong> Rua L-2, 190, Interlagos, Paraíso do Tocantins<br>
-      <strong>Hospital Regional:</strong> Rua 03, Setor Aeroporto</p>
-      <div id="emergency" class="emergency">🚨 EMERGÊNCIA DETECTADA — Ligue 192</div>
-    </aside>
-  </main>
+    <main class="card" role="main" aria-live="polite">
+      <section class="chat" aria-label="Chat">
+        <div id="messages" class="messages" aria-live="polite" aria-atomic="false"></div>
+        <div id="options" class="options" aria-hidden="false"></div>
+      </section>
 
-  <footer>Se for emergência real, ligue imediatamente para SAMU: 192</footer>
-</div>
-<a id="callBtn" class="floating" href="tel:192">📞 Ligar 192</a>
+      <aside class="panel" aria-label="Informações e contatos">
+        <h3>Contatos e Endereços</h3>
+        <div class="info">
+          <strong>SAMU:</strong> 192<br>
+          <strong>Pronto Atendimento 24h —</strong> Rua L-2, 190, Interlagos, Paraíso do Tocantins<br>
+          <strong>Hospital Regional —</strong> Rua 03, Setor Aeroporto
+        </div>
+
+        <div>
+          <h3>Como usar</h3>
+          <div class="info">Selecione um tema com os botões. O assistente fará perguntas rápidas e lhe dará orientações. Em casos graves, será exibido o botão para ligar ao SAMU e o endereço de referência.</div>
+        </div>
+
+        <div id="panelEmergency" class="emergency" aria-hidden="true"></div>
+        <div style="margin-top:auto">
+          <a id="panelCall" class="call" href="tel:192" style="display:none" aria-hidden="true">📞 Ligar 192 (SAMU)</a>
+        </div>
+      </aside>
+    </main>
+
+    <div class="footer">Se for emergência real, ligue para SAMU: <strong>192</strong></div>
+  </div>
+
+  <a id="floatingCall" class="floating" href="tel:192" aria-hidden="true">📞 Ligar 192</a>
 
 <script>
-const msgBox=document.getElementById('messages');
-const opts=document.getElementById('options');
-const emer=document.getElementById('emergency');
-const callBtn=document.getElementById('callBtn');
-function msg(t){const d=document.createElement('div');d.className='bubble';d.innerHTML=t;msgBox.appendChild(d);msgBox.scrollTop=msgBox.scrollHeight;}
-function setOpts(a){opts.innerHTML='';a.forEach(o=>{const b=document.createElement('button');b.className='btn';b.textContent=o.label;b.onclick=()=>sel(o.id);opts.appendChild(b);});}
-function emergency(on){emer.style.display=on?'block':'none';callBtn.style.display=on?'inline-block':'none';}
-const flow={
- start:{t:'👋 Olá! Eu sou o Assistente Virtual de Saúde da UBS.<br>Selecione um tema para iniciar:',o:[{id:'rins',label:'💧 Problemas nos rins'},{id:'diab',label:'🧠 Diabetes / Hipoglicemia'},{id:'ven',label:'🐍 Animais peçonhentos'}]},
- rins:{t:'Você apresenta dor intensa, febre ou sangue na urina?',o:[{id:'rinsE',label:'Sim'},{id:'rinsN',label:'Não'}]},
- rinsE:{t:'🚨 Emergência! Procure atendimento imediato ou ligue 192.<br><strong>Endereços:</strong><br>Pronto Atendimento 24h — Rua L-2, 190, Interlagos<br>Hospital Regional — Rua 03, Setor Aeroporto',em:true,o:[{id:'start',label:'Voltar ao início'}]},
- rinsN:{t:'Recomendações:<br>- Hidrate-se bem.<br>- Analgésicos simples se indicados.<br>- Procure consulta médica para investigação.<br>- Se surgirem febre, vômitos ou dor intensa, busque atendimento.',o:[{id:'start',label:'Voltar ao início'}]},
- diab:{t:'Você tem sintomas como tontura, fraqueza, suor frio ou confusão?',o:[{id:'diabS',label:'Sim'},{id:'diabN',label:'Não'}]},
- diabS:{t:'Pode ser hipoglicemia!<br>- Tome 1 copo de suco ou 1 colher de açúcar dissolvido em água.<br>- Reavalie em 15 minutos.<br>- Se não melhorar, ligue 192 ou vá ao hospital.',o:[{id:'start',label:'Voltar ao início'}]},
- diabN:{t:'Mantenha dieta e medicação conforme orientação médica.<br>Se sentir mal-estar, procure atendimento médico.',o:[{id:'start',label:'Voltar ao início'}]},
- ven:{t:'Ocorreu picada de cobra, escorpião ou outro animal?',o:[{id:'venS',label:'Sim'},{id:'venN',label:'Não'}]},
- venS:{t:'🚨 Emergência!<br>- Lave o local com água e sabão.<br>- Não faça torniquete nem cortes.<br>- Mantenha o membro imóvel e ligue 192.<br>Pronto Atendimento 24h — Rua L-2, 190, Interlagos<br>Hospital Regional — Rua 03, Setor Aeroporto',em:true,o:[{id:'start',label:'Voltar ao início'}]},
- venN:{t:'Evite contato com animais peçonhentos. Em caso de acidente, procure atendimento médico.',o:[{id:'start',label:'Voltar ao início'}]}
+/* utilities */
+const messages = document.getElementById('messages');
+const options = document.getElementById('options');
+const panelEmergency = document.getElementById('panelEmergency');
+const panelCall = document.getElementById('panelCall');
+const floatingCall = document.getElementById('floatingCall');
+
+function bot(text){ const d = document.createElement('div'); d.className='bubble bot'; d.innerHTML = text; messages.appendChild(d); messages.scrollTop = messages.scrollHeight; return d; }
+function user(text){ const d = document.createElement('div'); d.className='bubble user'; d.innerHTML = '<strong>Você:</strong> ' + text; messages.appendChild(d); messages.scrollTop = messages.scrollHeight; return d; }
+function clearOptions(){ options.innerHTML=''; }
+function setOptions(arr){ clearOptions(); if(!arr) return; arr.forEach(o=>{ const b = document.createElement('button'); b.className = o.style==='warn' ? 'btn warn' : (o.style==='secondary' ? 'btn secondary' : 'btn'); b.textContent = o.label; b.onclick = ()=> handle(o.id,o.label); options.appendChild(b); }); }
+function showEmergency(html){ panelEmergency.style.display='block'; panelEmergency.innerHTML = html; panelEmergency.setAttribute('aria-hidden','false'); panelCall.style.display='inline-block'; panelCall.setAttribute('aria-hidden','false'); floatingCall.style.display='inline-block'; floatingCall.setAttribute('aria-hidden','false'); }
+function hideEmergency(){ panelEmergency.style.display='none'; panelEmergency.setAttribute('aria-hidden','true'); panelCall.style.display='none'; panelCall.setAttribute('aria-hidden','true'); floatingCall.style.display='none'; floatingCall.setAttribute('aria-hidden','true'); }
+
+/* Full script text (from user's provided roteiro) */
+const SCRIPT = {
+  greeting: `👋 Olá, seja bem-vindo(a)! Eu sou assistente virtual de saúde.<br>Para começar, me conta: você gostaria de falar sobre:`,
+  kidneys: {
+    intro: `Certo! Vou fazer algumas perguntinhas rápidas sobre problemas nos rins.`,
+    q_pain: `Você está apresentando dor lombar intensa, em cólica, que pode irradiar para abdome inferior ou região genital?`,
+    no_pain: `Tudo bem! Caso apresente dor súbita e forte na região lombar, procure atendimento médico. Atualmente, não há sinais de cólica renal.`,
+    consider: `Isso pode ser um quadro de cólica renal por litíase urinária (pedra nos rins). Antes de prosseguirmos, preciso saber: Você apresenta algum destes sinais de gravidade?`,
+    signs_list: `<ul><li>Febre (&gt; 38ºC)</li><li>Náuseas ou vômitos persistentes</li><li>Dificuldade ou impossibilidade de urinar</li><li>Sangue visível na urina (hematúria macroscópica intensa)</li><li>Dor insuportável que não melhora com analgésicos</li></ul>`,
+    emergency: `🚨 Isso é uma emergência! Ligue imediatamente para o SAMU (192) ou vá ao pronto-socorro mais próximo (Pronto Atendimento 24 horas em Paraíso do Tocantins: Rua L-2, 190, Interlagos). Risco de complicação grave, como infecção urinária obstrutiva ou insuficiência renal aguda.`,
+    no_emergency_advice: `O quadro pode ser uma cólica renal sem sinais de complicação.<br><strong>Recomendações:</strong><ul><li>Beba bastante água (se não houver contraindicação).</li><li>Use analgésicos simples conforme orientação médica.</li><li>Procure atendimento médico para confirmar o diagnóstico e realizar exames de imagem (ultrassom ou tomografia).</li><li>Retorne imediatamente ao pronto-socorro se surgirem febre, vômitos persistentes, dificuldade para urinar ou dor que não melhora.</li></ul>`,
+    q_history: `Você já teve pedra nos rins antes?`,
+    history_yes: `Entendi. Pessoas que já tiveram cálculos têm alto risco de recorrência. É importante acompanhamento médico regular, exames de imagem e ajustes na dieta.`,
+    history_no: `Ok! Esse pode ser o seu primeiro episódio, mas ainda assim precisa de avaliação médica.`,
+    q_urine_symptoms: `Você está sentindo dor ao urinar, vontade de urinar muitas vezes, sangue na urina ou febre?`,
+    urine_yes: `Entendi. Esses sinais podem indicar algo que precisa de atenção médica. Se a dor for forte ou tiver sangue na urina, procure atendimento médico o quanto antes. Quer que eu te mostre cuidados básicos até chegar ao posto?`,
+    urine_no: `Ótimo. Se for apenas dúvida sobre saúde dos rins, posso te dar dicas para prevenção: beber bastante água, evitar excesso de sal e controlar pressão e diabetes.`,
+    basic_care: `<strong>Cuidados básicos até chegar ao atendimento:</strong><ul><li>Mantenha a pessoa em posição confortável.</li><li>Se houver náuseas, ofereça pequenas quantidades de líquido se tolerado.</li><li>Evite dar anti-inflamatórios fortes sem orientação médica.</li><li>Se houver sangramento intenso ou dificuldade para urinar, procure o pronto-socorro imediatamente.</li></ul>`
+  },
+
+  diabetes: {
+    intro: `Entendido! Vamos falar sobre diabetes e hipoglicemia.`,
+    q_diagnosis: `Você já tem diagnóstico de diabetes?`,
+    q_symptoms: `Está sentindo tontura, fraqueza, visão embaçada ou muita sede?`,
+    symptoms_may: `Esses sintomas podem indicar alteração da glicose. Se estiver passando mal, vá ao pronto atendimento.`,
+    prevention_offer: `Sinais de alerta para procurar médico: sede em excesso, urinar muito, perda de peso não intencional e visão borrada. Gostaria de dicas para prevenção da diabetes?`,
+    prevention_yes_text: `Para prevenir diabetes tipo 2: manter alimentação equilibrada (frutas, verduras, cereais integrais), praticar pelo menos 150 minutos de atividade física por semana, evitar tabagismo, reduzir álcool, dormir bem e controlar estresse. Faça check-ups regulares se tiver fatores de risco.`,
+    hypo_intro: `Agora, sobre hipoglicemia:`,
+    hypo_mild: `<strong>Hipoglicemia leve (50–70 mg/dL)</strong>: fome, tremores, suor frio, palpitações.<br><strong>Tratamento (leve):</strong> tomar 15 g de carboidrato de rápida absorção (ex.: 1 copo de água com 1 colher de sopa de açúcar; 3 balinhas; 3 sachês de mel; meio copo de suco). Espere 15 minutos e reavalie.`,
+    hypo_mod_severe: `<strong>Hipoglicemia moderada/grave (&lt;50 mg/dL)</strong>: tontura, fraqueza, visão embaçada, dor de cabeça, irritação, perda de consciência possível.<br><strong>Tratamento (grave):</strong> tomar 30 g de carboidrato de rápida absorção (ex.: 1 copo de água com 2 colheres de sopa de açúcar; 6 balinhas; 6 sachês de mel; 1 copo de suco). Espere 15 minutos e reavalie. Se não melhorar, procure ajuda médica imediatamente. Se inconsciente, é emergência: ligar 192 e, se disponível, aplicar glucagon conforme protocolo.`
+  },
+
+  venom: {
+    intro: `Urgência e Emergência — Animais peçonhentos.`,
+    q_snake: `Você sofreu acidente envolvendo cobra/serpente?`,
+    snake_identify: `Você consegue identificar se o animal é peçonhento?`,
+    snake_classify: `Classifique o acidente: leve, moderado ou grave.`,
+    snake_severity_text: `<strong>Sinais de alarme (qualquer animal peçonhento):</strong><ul><li>Inchaço intenso</li><li>Bolhas</li><li>Sangramento</li><li>Hipotensão / choque</li><li>Dificuldade respiratória</li><li>Convulsões</li></ul>`,
+    snake_not_identified: `Se não identificar o animal, mantenha observação. Se houver dor intensa, inchaço ou sinais sistêmicos, procure atendimento.`,
+    scorpion_intro: `Você sofreu acidente envolvendo escorpião?`,
+    scorpion_class: `Classifique o acidente em leve, moderado ou grave.`,
+    scorpion_info: `Nos acidentes leves: dor local (geralmente em extremidades inferiores). Nos moderados: sudorese, náuseas, vômitos, agitação. Nos graves: salivação excessiva, arritmia, dificuldade respiratória, alteração neurológica.`
+  }
 };
-function sel(id){const n=flow[id];msg(n.t);emergency(!!n.em);setOpts(n.o);}
-function start(){msgBox.innerHTML='';emergency(false);msg(flow.start.t);setOpts(flow.start.o);}
+
+/* Flow nodes (buttons only) */
+const NODES = {
+  start: {
+    bot: SCRIPT.greeting,
+    options: [
+      {id:'kid_intro', label:'1️⃣ Problemas nos rins (Litíase)'},
+      {id:'dia_intro', label:'2️⃣ Diabetes (Hipoglicemia)'},
+      {id:'ven_intro', label:'3️⃣ Urgência / Animais peçonhentos'}
+    ]
+  },
+
+  /* Kidneys */
+  kid_intro: {
+    bot: SCRIPT.kidneys.intro + '<br><br>' + SCRIPT.kidneys.q_pain,
+    options: [{id:'kid_pain_no', label:'Não'}, {id:'kid_pain_yes', label:'Sim'}]
+  },
+  kid_pain_no: {
+    bot: SCRIPT.kidneys.no_pain,
+    options: [{id:'kid_back_to_start', label:'Voltar ao início'}, {id:'kid_more', label:'Dicas de prevenção'}]
+  },
+  kid_more: {
+    bot: '<strong>Dicas de prevenção:</strong><br>- Beber muita água diariamente (meta individual).<br>- Evitar excesso de sal e grande ingestão de proteínas animais.<br>- Controlar pressão arterial e glicemia.<br>- Buscar reavaliação com equipe de saúde.',
+    options:[{id:'start',label:'Voltar ao início'}]
+  },
+  kid_pain_yes: {
+    bot: SCRIPT.kidneys.consider + '<br>' + SCRIPT.kidneys.signs_list,
+    options: [{id:'kid_signs_yes', label:'Apresento um ou mais sinais'}, {id:'kid_signs_no', label:'Não apresento sinais'}]
+  },
+  kid_signs_yes: {
+    bot: SCRIPT.kidneys.emergency,
+    emergency:true,
+    options: [{id:'kid_em_next', label:'Entendi — e agora?'}, {id:'start', label:'Voltar ao início'}]
+  },
+  kid_em_next: {
+    bot: SCRIPT.kidneys.emergency + '<br><br><strong>Endereços de referência:</strong><br>Pronto Atendimento 24h — Rua L-2, 190, Interlagos, Paraíso do Tocantins<br>Hospital Regional — Rua 03, Setor Aeroporto',
+    emergency:true,
+    options: [{id:'kid_followup', label:'Recomendações até chegar'}, {id:'start', label:'Voltar ao início'}]
+  },
+  kid_signs_no: {
+    bot: SCRIPT.kidneys.no_emergency_advice,
+    options: [{id:'kid_history', label:'Já tive pedra nos rins'}, {id:'kid_first', label:'Primeira vez'}, {id:'kid_urine_symp_q', label:'Tenho sintomas urinários'}]
+  },
+  kid_history: {
+    bot: SCRIPT.kidneys.history_yes,
+    options: [{id:'kid_followup', label:'Recomendações'}, {id:'start', label:'Voltar ao início'}]
+  },
+  kid_first: {
+    bot: SCRIPT.kidneys.history_no,
+    options: [{id:'kid_followup', label:'Recomendações'}, {id:'start', label:'Voltar ao início'}]
+  },
+  kid_urine_symp_q: {
+    bot: SCRIPT.kidneys.q_urine_symptoms,
+    options: [{id:'kid_urine_yes', label:'Sim'}, {id:'kid_urine_no', label:'Não'}]
+  },
+  kid_urine_yes: {
+    bot: SCRIPT.kidneys.urine_yes,
+    options: [{id:'kid_show_basic', label:'Mostrar cuidados básicos'}, {id:'start', label:'Voltar ao início'}]
+  },
+  kid_show_basic: {
+    bot: SCRIPT.kidneys.basic_care,
+    options: [{id:'kid_followup', label:'Recomendações e seguimento'}, {id:'start', label:'Voltar ao início'}]
+  },
+  kid_urine_no: {
+    bot: SCRIPT.kidneys.urine_no,
+    options: [{id:'kid_followup', label:'Dicas de prevenção'}, {id:'start', label:'Voltar ao início'}]
+  },
+  kid_followup: {
+    bot: '<strong>Recomendações e seguimento:</strong><br>- Procurar avaliação médica para exames (urina, creatinina, imagem).<br>- Hidratação adequada conforme orientação médica.<br>- Revisão de dieta e, se indicado, estudo metabólico para prevenção de recidiva.',
+    options: [{id:'start', label:'Voltar ao início'}]
+  },
+
+  /* Diabetes */
+  dia_intro: {
+    bot: SCRIPT.diabetes.intro + '<br><br>' + SCRIPT.diabetes.q_diagnosis,
+    options: [{id:'dia_yes', label:'Sim'}, {id:'dia_no', label:'Não'}]
+  },
+  dia_yes: {
+    bot: SCRIPT.diabetes.q_symptoms,
+    options: [{id:'dia_sym_yes', label:'Sim'}, {id:'dia_sym_no', label:'Não'}]
+  },
+  dia_sym_yes: {
+    bot: SCRIPT.diabetes.symptoms_may,
+    options: [{id:'dia_hypo_info', label:'Explicar hipoglicemia'}, {id:'start', label:'Voltar ao início'}]
+  },
+  dia_hypo_info: {
+    bot: SCRIPT.diabetes.hypo_mild + '<br><br>' + SCRIPT.diabetes.hypo_mod_severe,
+    options: [{id:'dia_prevention', label:'Prevenção e rotina'}, {id:'start', label:'Voltar ao início'}]
+  },
+  dia_sym_no: {
+    bot: 'Continue se cuidando! Lembre-se de manter alimentação equilibrada, tomar a medicação no horário e praticar atividade física regularmente.',
+    options: [{id:'dia_prevention', label:'Dicas de prevenção'}, {id:'start', label:'Voltar ao início'}]
+  },
+  dia_no: {
+    bot: SCRIPT.diabetes.prevention_offer,
+    options: [{id:'dia_prevent_yes', label:'Sim, quero dicas'}, {id:'start', label:'Não'}]
+  },
+  dia_prevent_yes: {
+    bot: SCRIPT.diabetes.prevention_yes_text,
+    options: [{id:'start', label:'Voltar ao início'}]
+  },
+  dia_prevention: {
+    bot: '<strong>Prevenção e rotina:</strong><br>' + SCRIPT.diabetes.prevention_yes_text + '<br><br><strong>Atenção:</strong> se houver sinais de hipoglicemia grave (confusão, perda de consciência), ligue 192 imediatamente.',
+    options: [{id:'start', label:'Voltar ao início'}]
+  },
+
+  /* Venom */
+  ven_intro: {
+    bot: SCRIPT.venom.intro + '<br><br>' + SCRIPT.venom.q_snake,
+    options: [{id:'ven_snake_yes', label:'Sim'}, {id:'ven_snake_no', label:'Não'}]
+  },
+  ven_snake_yes: {
+    bot: SCRIPT.venom.snake_identify + '<br><br>Você consegue identificar se o animal é peçonhento?',
+    options: [{id:'ven_identify_yes', label:'Sim'}, {id:'ven_identify_no', label:'Não'}]
+  },
+  ven_identify_yes: {
+    bot: 'Identifique características (se possível): dentição, pupilas, fosseta loreal, cauda lisa, escamas eriçadas, guizo. <br><br>' + SCRIPT.venom.snake_classify,
+    options: [{id:'ven_class_grave', label:'Grave'}, {id:'ven_class_mod', label:'Moderado'}, {id:'ven_class_mild', label:'Leve'}, {id:'start', label:'Não sei'}]
+  },
+  ven_identify_no: {
+    bot: SCRIPT.venom.snake_not_identified,
+    options: [{id:'start', label:'Voltar ao início'}, {id:'ven_class_unknown', label:'Tenho sintomas — avaliar'}]
+  },
+  ven_class_grave: {
+    bot: '🚨🚨🚨 Isso é uma emergência! ' + SCRIPT.venom.snake_severity_text + '<br><br>Procure atendimento IMEDIATO: SAMU 192 ou Pronto Atendimento 24h — Rua L-2, 190, Interlagos.',
+    emergency:true,
+    options: [{id:'start', label:'Voltar ao início'}]
+  },
+  ven_class_mod: {
+    bot: '🚨🚨 Isso é uma emergência! ' + SCRIPT.venom.snake_severity_text + '<br><br>Procure atendimento urgente: SAMU 192 ou Pronto Atendimento 24h — Rua L-2, 190, Interlagos.',
+    emergency:true,
+    options: [{id:'start', label:'Voltar ao início'}]
+  },
+  ven_class_mild: {
+    bot: '🚨 Isso é uma urgência. ' + SCRIPT.venom.snake_severity_text + '<br><br>Procure o pronto-socorro mais próximo: Pronto Atendimento 24h — Rua L-2, 190, Interlagos.',
+    emergency:true,
+    options: [{id:'start', label:'Voltar ao início'}]
+  },
+  ven_class_unknown: {
+    bot: SCRIPT.venom.snake_not_identified,
+    options: [{id:'start', label:'Voltar ao início'}]
+  },
+  ven_snake_no: {
+    bot: SCRIPT.venom.scorpion_intro + '<br><br>' + SCRIPT.venom.scorpion_class,
+    options: [{id:'scorp_grave', label:'Grave'}, {id:'scorp_mod', label:'Moderado'}, {id:'scorp_mild', label:'Leve'}, {id:'start', label:'Não'}]
+  },
+  scorp_grave: {
+    bot: '🚨🚨🚨 Isso é uma emergência! ' + SCRIPT.venom.scorpion_info + '<br><br>Procure atendimento IMEDIATO: SAMU 192 ou Pronto Atendimento 24h — Rua L-2, 190, Interlagos.',
+    emergency:true,
+    options: [{id:'start', label:'Voltar ao início'}]
+  },
+  scorp_mod: {
+    bot: '🚨🚨 Isso é uma emergência! ' + SCRIPT.venom.scorpion_info + '<br><br>Procure atendimento urgente: SAMU 192 ou Pronto Atendimento 24h — Rua L-2, 190, Interlagos.',
+    emergency:true,
+    options: [{id:'start', label:'Voltar ao início'}]
+  },
+  scorp_mild: {
+    bot: '🚨 Isso é uma urgência! ' + SCRIPT.venom.scorpion_info + '<br><br>Procure o pronto-socorro mais próximo: Pronto Atendimento 24h — Rua L-2, 190, Interlagos.',
+    emergency:true,
+    options: [{id:'start', label:'Voltar ao início'}]
+  }
+};
+
+/* handler */
+function render(nodeId){
+  const node = NODES[nodeId];
+  if(!node) return;
+  if(node.bot) bot(node.bot);
+  if(node.emergency){
+    showEmergency('🚨 EMERGÊNCIA — Ligue 192 ou dirija-se ao pronto-socorro imediatamente.<br><br><strong>Endereços:</strong><br>Pronto Atendimento 24h — Rua L-2, 190, Interlagos, Paraíso do Tocantins<br>Hospital Regional — Rua 03, Setor Aeroporto');
+    bot('🚨 <strong>Emergência:</strong> ligue 192 ou dirija-se ao pronto-socorro agora.<br><a href="tel:192" class="btn warn" style="display:inline-block;margin-top:8px;text-decoration:none">📞 Ligar 192 (SAMU)</a>');
+  } else {
+    hideEmergency();
+  }
+  setOptions(node.options);
+}
+
+/* entry */
+function start(){
+  messages.innerHTML='';
+  hideEmergency();
+  bot(SCRIPT.greeting);
+  setOptions(NODES.start.options);
+}
+function setOptions(arr){ options.innerHTML=''; if(!arr) return; arr.forEach(o=>{ const b=document.createElement('button'); b.className = 'btn'; b.textContent = o.label; b.onclick = ()=>{ user(o.label); render(o.id); }; options.appendChild(b); }); messages.scrollTop = messages.scrollHeight; }
+function handle(id,label){ user(label); render(id); }
+
+/* show/hide emergency */
+function showEmergency(html){ panelEmergency.style.display='block'; panelEmergency.innerHTML = html; panelEmergency.setAttribute('aria-hidden','false'); panelCall.style.display='inline-block'; panelCall.setAttribute('aria-hidden','false'); floatingCall.style.display='inline-block'; floatingCall.setAttribute('aria-hidden','false'); }
+function hideEmergency(){ panelEmergency.style.display='none'; panelCall.style.display='none'; floatingCall.style.display='none'; panelEmergency.setAttribute('aria-hidden','true'); panelCall.setAttribute('aria-hidden','true'); floatingCall.setAttribute('aria-hidden','true'); }
+
+/* start */
 start();
 </script>
 </body>

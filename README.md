@@ -1,13 +1,12 @@
-# Assistente Virtual de Saúde — UBS
+# Assistente Virtual de Saúde — UBS (completo)
 
-Versão final do chatbot com:
-- Fundo off-white
-- Interface por botões
-- Recomendações completas para rins, diabetes e animais peçonhentos
-- Botão 📞 Ligar 192 e endereços de emergência
+Este repositório contém a versão completa do chatbot, implementando o roteiro clínico fornecido:
+- Problemas nos rins (litíase)
+- Diabetes (hipoglicemia)
+- Urgência / Emergência (cobra e escorpião)
 
-## Publicar no GitHub Pages
+Como publicar (GitHub Pages):
 1. Crie um repositório público no GitHub (ex: chatbot-ubs).
-2. Envie o arquivo index.html.
-3. Vá em Settings → Pages → selecione "Deploy from a branch" e salve.
-4. Após 1 minuto, acesse: https://seu-usuario.github.io/chatbot-ubs/
+2. Envie `index.html` para a raiz do repositório.
+3. Em Settings → Pages, selecione Branch `main` e `/ (root)`, salve.
+4. Aguarde alguns minutos e acesse `https://<seu-usuario>.github.io/<repo>/`.
