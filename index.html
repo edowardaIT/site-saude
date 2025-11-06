@@ -145,6 +145,8 @@ const SCRIPT = {
     hypo_mod_severe: `<strong>Hipoglicemia moderada/grave (&lt;50 mg/dL)</strong>: tontura, fraqueza, visão embaçada, dor de cabeça, irritação, perda de consciência possível.<br><strong>Tratamento (grave):</strong> tomar 30 g de carboidrato de rápida absorção (ex.: 1 copo de água com 2 colheres de sopa de açúcar; 6 balinhas; 6 sachês de mel; 1 copo de suco). Espere 15 minutos e reavalie. Se não melhorar, procure ajuda médica imediatamente. Se inconsciente, é emergência: ligar 192 e, se disponível, aplicar glucagon conforme protocolo.`
   },
 
+
+const SCRIPT = {
   venom: {
     intro: `Urgência e Emergência — Animais peçonhentos.`,
     q_snake: `Você sofreu acidente envolvendo cobra/serpente?`,
@@ -264,59 +266,71 @@ const NODES = {
   },
 
   /* Venom */
+const FLOW = {
   ven_intro: {
     bot: SCRIPT.venom.intro + '<br><br>' + SCRIPT.venom.q_snake,
-    options: [{id:'ven_snake_yes', label:'Sim'}, {id:'ven_snake_no', label:'Não'}]
+    options: [
+      { id: 'ven_snake_yes', label: 'Sim' },
+      { id: 'ven_snake_no', label: 'Não' }
+    ]
   },
+
   ven_snake_yes: {
     bot: SCRIPT.venom.snake_identify + '<br><br>Você consegue identificar se o animal é peçonhento?',
-    options: [{id:'ven_identify_yes', label:'Sim'}, {id:'ven_identify_no', label:'Não'}]
+    options: [
+      { id: 'ven_identify_yes', label: 'Sim' },
+      { id: 'ven_identify_no', label: 'Não' }
+    ]
   },
+
   ven_identify_yes: {
-    bot: 'Identifique características (se possível): dentição, pupilas, fosseta loreal, cauda lisa, escamas eriçadas, guizo. <br><br>' + SCRIPT.venom.snake_classify,
-    options: [{id:'ven_class_grave', label:'Grave'}, {id:'ven_class_mod', label:'Moderado'}, {id:'ven_class_mild', label:'Leve'}, {id:'start', label:'Não sei'}]
+    bot: 'Identifique características (se possível): dentição, pupilas, fosseta loreal, cauda lisa, escamas eriçadas, guizo.<br><br>' +
+         SCRIPT.venom.snake_classify,
+    options: [
+      { id: 'ven_class_grave', label: 'Grave' },
+      { id: 'ven_class_mod', label: 'Moderado' },
+      { id: 'ven_class_mild', label: 'Leve' },
+      { id: 'start', label: 'Não sei' }
+    ]
   },
+
   ven_identify_no: {
     bot: SCRIPT.venom.snake_not_identified,
-    options: [{id:'start', label:'Voltar ao início'}, {id:'ven_class_unknown', label:'Tenho sintomas — avaliar'}]
+    options: [
+      { id: 'start', label: 'Voltar ao início' },
+      { id: 'ven_class_symptoms', label: 'Tenho sintomas — avaliar' }
+    ]
   },
+
+  // ✅ NOVA RESPOSTA CORRIGIDA:
+  ven_class_symptoms: {
+    bot: `Se houver dor intensa, inchaço ou sinais sistêmicos (sudorese, vômitos persistentes, salivação excessiva, agitação, arritmia, dificuldade respiratória e alterações neurológicas), procure atendimento pela SAMU 192 ou Pronto Atendimento 24h (Rua L-2, 190, Interlagos).`,
+    emergency: true,
+    options: [{ id: 'start', label: 'Voltar ao início' }]
+  },
+
   ven_class_grave: {
-    bot: '🚨🚨🚨 Isso é uma emergência! ' + SCRIPT.venom.snake_severity_text + '<br><br>Procure atendimento IMEDIATO: SAMU 192 ou Pronto Atendimento 24h — Rua L-2, 190, Interlagos.',
-    emergency:true,
-    options: [{id:'start', label:'Voltar ao início'}]
+    bot: '🚨🚨🚨 Isso é uma emergência! ' +
+         SCRIPT.venom.snake_severity_text +
+         '<br><br>Procure atendimento IMEDIATO: SAMU 192 ou Pronto Atendimento 24h — Rua L-2, 190, Interlagos.',
+    emergency: true,
+    options: [{ id: 'start', label: 'Voltar ao início' }]
   },
+
   ven_class_mod: {
-    bot: '🚨🚨 Isso é uma emergência! ' + SCRIPT.venom.snake_severity_text + '<br><br>Procure atendimento urgente: SAMU 192 ou Pronto Atendimento 24h — Rua L-2, 190, Interlagos.',
-    emergency:true,
-    options: [{id:'start', label:'Voltar ao início'}]
+    bot: '🚨🚨 Isso é uma emergência! ' +
+         SCRIPT.venom.snake_severity_text +
+         '<br><br>Procure atendimento urgente: SAMU 192 ou Pronto Atendimento 24h — Rua L-2, 190, Interlagos.',
+    emergency: true,
+    options: [{ id: 'start', label: 'Voltar ao início' }]
   },
+
   ven_class_mild: {
-    bot: '🚨 Isso é uma urgência. ' + SCRIPT.venom.snake_severity_text + '<br><br>Procure o pronto-socorro mais próximo: Pronto Atendimento 24h — Rua L-2, 190, Interlagos.',
-    emergency:true,
-    options: [{id:'start', label:'Voltar ao início'}]
-  },
-  ven_class_unknown: {
-    bot: SCRIPT.venom.snake_not_identified,
-    options: [{id:'start', label:'Voltar ao início'}]
-  },
-  ven_snake_no: {
-    bot: SCRIPT.venom.scorpion_intro + '<br><br>' + SCRIPT.venom.scorpion_class,
-    options: [{id:'scorp_grave', label:'Grave'}, {id:'scorp_mod', label:'Moderado'}, {id:'scorp_mild', label:'Leve'}, {id:'start', label:'Não'}]
-  },
-  scorp_grave: {
-    bot: '🚨🚨🚨 Isso é uma emergência! ' + SCRIPT.venom.scorpion_info + '<br><br>Procure atendimento IMEDIATO: SAMU 192 ou Pronto Atendimento 24h — Rua L-2, 190, Interlagos.',
-    emergency:true,
-    options: [{id:'start', label:'Voltar ao início'}]
-  },
-  scorp_mod: {
-    bot: '🚨🚨 Isso é uma emergência! ' + SCRIPT.venom.scorpion_info + '<br><br>Procure atendimento urgente: SAMU 192 ou Pronto Atendimento 24h — Rua L-2, 190, Interlagos.',
-    emergency:true,
-    options: [{id:'start', label:'Voltar ao início'}]
-  },
-  scorp_mild: {
-    bot: '🚨 Isso é uma urgência! ' + SCRIPT.venom.scorpion_info + '<br><br>Procure o pronto-socorro mais próximo: Pronto Atendimento 24h — Rua L-2, 190, Interlagos.',
-    emergency:true,
-    options: [{id:'start', label:'Voltar ao início'}]
+    bot: '🚨 Isso é uma urgência. ' +
+         SCRIPT.venom.snake_severity_text +
+         '<br><br>Procure o pronto-socorro mais próximo: Pronto Atendimento 24h — Rua L-2, 190, Interlagos.',
+    emergency: true,
+    options: [{ id: 'start', label: 'Voltar ao início' }]
   }
 };
 
