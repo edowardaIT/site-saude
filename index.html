@@ -210,6 +210,7 @@ function emergency(on) {
 }
 
 const flow = {
+
   start: {
     t: '👋 Olá! Eu sou o Assistente Virtual de Saúde da UBS.<br>Selecione o tema que deseja conversar:',
     o: [
@@ -219,7 +220,10 @@ const flow = {
     ]
   },
 
-  // 💧 FLUXO - RINS
+  /* ============================================================
+     💧 FLUXO COMPLETO – PROBLEMAS NOS RINS
+  ============================================================ */
+
   rins_intro: {
     t: 'Certo! Vou fazer algumas perguntinhas rápidas.<br><br>Você está apresentando dor lombar intensa, em cólica, que pode irradiar para abdome inferior ou região genital?',
     o: [
@@ -230,11 +234,14 @@ const flow = {
 
   rins_dor_nao: {
     t: 'Tudo bem! Caso apresente dor súbita e forte na região lombar, procure atendimento médico. Atualmente, não há sinais de cólica renal.',
-    o: [{ id: 'start', label: 'Voltar ao início' }]
+    o: [
+      { id: 'avaliacao_intro', label: 'Avaliar atendimento' },
+      { id: 'start', label: 'Voltar ao início' }
+    ]
   },
 
   rins_dor_sim: {
-    t: 'Isso pode ser um quadro de cólica renal por litíase urinária (pedra nos rins).<br><br>Antes de prosseguirmos, preciso saber: você apresenta algum destes sinais de gravidade?<ul><li>Febre acima de 38°C</li><li>Náuseas ou vômitos persistentes</li><li>Dificuldade ou impossibilidade de urinar</li><li>Sangue visível na urina</li><li>Dor insuportável que não melhora com analgésicos</li></ul>',
+    t: 'Isso pode ser um quadro de cólica renal por litíase urinária (pedra nos rins).<br><br>Antes de prosseguirmos, preciso saber: você apresenta algum destes sinais de gravidade?<ul><li>Febre > 38°C</li><li>Náuseas ou vômitos persistentes</li><li>Dificuldade para urinar</li><li>Sangue visível na urina</li><li>Dor insuportável que não melhora</li></ul>',
     o: [
       { id: 'rins_grave_sim', label: 'Sim' },
       { id: 'rins_grave_nao', label: 'Não' }
@@ -242,13 +249,16 @@ const flow = {
   },
 
   rins_grave_sim: {
-    t: '🚨 Isso é uma emergência! Ligue imediatamente para o SAMU (192) ou vá ao pronto-socorro mais próximo.<br><br><strong>Endereços:</strong><br>Pronto Atendimento 24h — Rua L-2, 190, Interlagos, Paraíso do Tocantins<br>Hospital Regional — Rua 03, Setor Aeroporto<br><br>Risco de complicação grave, como infecção urinária obstrutiva ou insuficiência renal aguda.',
+    t: '🚨 Isso é uma emergência! Ligue imediatamente para o SAMU (192) ou vá ao pronto-socorro mais próximo.<br><br><strong>Endereços:</strong><br>Pronto Atendimento 24h — Rua L-2, 190, Interlagos<br>Hospital Regional — Rua 03, Setor Aeroporto',
     em: true,
-    o: [{ id: 'start', label: 'Voltar ao início' }]
+    o: [
+      { id: 'avaliacao_intro', label: 'Avaliar atendimento' },
+      { id: 'start', label: 'Voltar ao início' }
+    ]
   },
 
   rins_grave_nao: {
-    t: 'O quadro pode ser uma cólica renal sem sinais de complicação.<br><br><strong>Recomendações:</strong><ul><li>Beba bastante água (se não houver contraindicação)</li><li>Use analgésicos simples conforme orientação médica</li><li>Procure atendimento médico para confirmar o diagnóstico e realizar exames de imagem</li><li>Retorne imediatamente ao pronto-socorro se surgirem febre, vômitos persistentes, dificuldade para urinar ou dor que não melhora</li></ul><br>Você já teve pedra nos rins antes?',
+    t: 'O quadro pode ser uma cólica renal sem sinais de complicação.<br><br><strong>Recomendações:</strong><ul><li>Beba bastante água</li><li>Use analgésicos simples</li><li>Procure avaliação médica</li><li>Retorne caso piore</li></ul><br>Você já teve pedra nos rins antes?',
     o: [
       { id: 'rins_hist_sim', label: 'Sim' },
       { id: 'rins_hist_nao', label: 'Não' }
@@ -256,7 +266,7 @@ const flow = {
   },
 
   rins_hist_sim: {
-    t: 'Entendi. Pessoas que já tiveram cálculos têm alto risco de recorrência. É importante acompanhamento médico regular, exames de imagem e ajustes na dieta.<br><br>Você está sentindo dor ao urinar, vontade de urinar muitas vezes, sangue na urina ou febre?',
+    t: 'Entendi. Pessoas que já tiveram cálculos têm alto risco de recorrência. É importante acompanhamento médico regular.<br><br>Você está sentindo dor ao urinar, vontade de urinar muitas vezes, sangue na urina ou febre?',
     o: [
       { id: 'rins_infec_sim', label: 'Sim' },
       { id: 'rins_infec_nao', label: 'Não' }
@@ -264,7 +274,7 @@ const flow = {
   },
 
   rins_hist_nao: {
-    t: 'Ok! Esse pode ser o seu primeiro episódio, mas ainda assim precisa de avaliação médica.<br><br>Você está sentindo dor ao urinar, vontade de urinar muitas vezes, sangue na urina ou febre?',
+    t: 'Ok! Pode ser seu primeiro episódio. Agora me diga:<br><br>Você está sentindo dor ao urinar, vontade frequente de urinar, sangue na urina ou febre?',
     o: [
       { id: 'rins_infec_sim', label: 'Sim' },
       { id: 'rins_infec_nao', label: 'Não' }
@@ -272,7 +282,7 @@ const flow = {
   },
 
   rins_infec_sim: {
-    t: 'Esses sinais podem indicar algo que precisa de atenção médica. Se a dor for forte ou houver sangue na urina, procure atendimento médico o quanto antes.<br>Quer que eu te mostre cuidados básicos até chegar ao posto?',
+    t: 'Esses sinais podem indicar infecção urinária. Se a dor for forte ou houver sangue, procure atendimento o quanto antes.<br>Quer ver cuidados básicos até chegar ao posto?',
     o: [
       { id: 'rins_cuidados_sim', label: 'Sim' },
       { id: 'rins_cuidados_nao', label: 'Não' }
@@ -280,22 +290,35 @@ const flow = {
   },
 
   rins_infec_nao: {
-    t: 'Ótimo. Se for apenas dúvida sobre saúde dos rins, seguem dicas de prevenção:<ul><li>Beba bastante água</li><li>Evite excesso de sal</li><li>Controle pressão e diabetes</li></ul>',
-    o: [{ id: 'start', label: 'Voltar ao início' }]
+    t: 'Ótimo! Algumas dicas para prevenção:<ul><li>Beba bastante água</li><li>Reduza sal</li><li>Controle pressão/diabetes</li></ul>',
+    o: [
+      { id: 'avaliacao_intro', label: 'Avaliar atendimento' },
+      { id: 'start', label: 'Voltar ao início' }
+    ]
   },
 
   rins_cuidados_sim: {
-    t: '<strong>Cuidados básicos:</strong><ul><li>Hidrate-se bem</li><li>Evite automedicação</li><li>Procure a UBS para avaliação assim que possível</li></ul>',
-    o: [{ id: 'start', label: 'Voltar ao início' }]
+    t: '<strong>Cuidados básicos:</strong><ul><li>Hidrate-se</li><li>Evite automedicação</li><li>Procure a UBS assim que possível</li></ul>',
+    o: [
+      { id: 'avaliacao_intro', label: 'Avaliar atendimento' },
+      { id: 'start', label: 'Voltar ao início' }
+    ]
   },
 
   rins_cuidados_nao: {
-    t: 'Tudo bem! Lembre-se: se houver dor, febre ou sangue na urina, procure atendimento médico o quanto antes.',
-    o: [{ id: 'start', label: 'Voltar ao início' }]
+    t: 'Certo. Lembre-se: se houver febre, sangue na urina ou dor forte, procure atendimento.',
+    o: [
+      { id: 'avaliacao_intro', label: 'Avaliar atendimento' },
+      { id: 'start', label: 'Voltar ao início' }
+    ]
   },
-  // 🍬 FLUXO – DIABETES / HIPOGLICEMIA
+
+  /* ============================================================
+     🍬 FLUXO COMPLETO – DIABETES / HIPOGLICEMIA
+  ============================================================ */
+
   diab_intro: {
-    t: 'Entendido! Para te ajudar melhor: você já tem diagnóstico de diabetes?',
+    t: 'Entendido! Você já tem diagnóstico de diabetes?',
     o: [
       { id: 'diab_diag_sim', label: 'Sim' },
       { id: 'diab_diag_nao', label: 'Não' }
@@ -303,7 +326,7 @@ const flow = {
   },
 
   diab_diag_sim: {
-    t: 'Certo. Está sentindo tontura 🤢, fraqueza 😓, visão embaçada 👀 ou muita sede 🥤?',
+    t: 'Você está sentindo tontura, fraqueza, suor frio ou visão embaçada?',
     o: [
       { id: 'diab_sint_sim', label: 'Sim' },
       { id: 'diab_sint_nao', label: 'Não' }
@@ -311,18 +334,24 @@ const flow = {
   },
 
   diab_sint_sim: {
-    t: 'Esses sintomas podem indicar alteração da glicose.<br>Se estiver passando mal 🚑, vá ao pronto atendimento ou ligue 192.',
+    t: 'Isso pode ser hipoglicemia!<br>Se estiver passando mal, vá ao Pronto Atendimento ou ligue 192.',
     em: true,
-    o: [{ id: 'start', label: 'Voltar ao início' }]
+    o: [
+      { id: 'avaliacao_intro', label: 'Avaliar atendimento' },
+      { id: 'start', label: 'Voltar ao início' }
+    ]
   },
 
   diab_sint_nao: {
-    t: 'Continue se cuidando!<br>Mantenha alimentação equilibrada 🥗, tome a medicação no horário 💊 e pratique atividade física leve 🏃‍♂️.',
-    o: [{ id: 'start', label: 'Voltar ao início' }]
+    t: 'Mantenha alimentação equilibrada, tome os remédios no horário e faça atividade física leve.',
+    o: [
+      { id: 'avaliacao_intro', label: 'Avaliar atendimento' },
+      { id: 'start', label: 'Voltar ao início' }
+    ]
   },
 
   diab_diag_nao: {
-    t: 'Ok! Alguns sinais de alerta para procurar médico são: sede em excesso 🥤, urinar muito, perda de peso não intencional e visão borrada 👀.<br>Gostaria de dicas para prevenção da diabetes?',
+    t: 'Alguns sinais de alerta: sede intensa, urinar muito, visão borrada e perda de peso. Deseja dicas de prevenção?',
     o: [
       { id: 'diab_prev_sim', label: 'Sim' },
       { id: 'diab_prev_nao', label: 'Não' }
@@ -330,7 +359,7 @@ const flow = {
   },
 
   diab_prev_sim: {
-    t: 'Ótimo!<br>Para prevenir o diabetes tipo 2:<ul><li>Alimentação equilibrada 🍎🥦🌾</li><li>Pratique 150 min/semana de atividade física 🏃‍♀️</li><li>Evite cigarro 🚭 e reduza álcool 🍺</li><li>Durma bem 😴 e controle o estresse 🧘‍♀️</li><li>Faça check-ups regulares 🩺</li></ul><br>Quer saber sobre hipoglicemia?',
+    t: 'Para prevenir diabetes:<ul><li>Alimentação saudável</li><li>150 min de exercícios/semana</li><li>Evite cigarro/álcool</li><li>Durma bem</li></ul>Quer aprender sobre hipoglicemia?',
     o: [
       { id: 'diab_hipo_sim', label: 'Sim' },
       { id: 'start', label: 'Não' }
@@ -338,19 +367,28 @@ const flow = {
   },
 
   diab_prev_nao: {
-    t: 'Tudo bem! Lembre-se: se sentir tontura, fraqueza, suor frio ou visão embaçada, verifique a glicemia e procure atendimento médico se necessário.',
-    o: [{ id: 'start', label: 'Voltar ao início' }]
+    t: 'Tudo bem. Se algum dia tiver tontura ou visão embaçada, procure atendimento.',
+    o: [
+      { id: 'avaliacao_intro', label: 'Avaliar atendimento' },
+      { id: 'start', label: 'Voltar ao início' }
+    ]
   },
 
   diab_hipo_sim: {
-    t: '<strong>Hipoglicemia leve (50-70 mg/dL)</strong><ul><li>Fome, tremores, suor frio, palpitação</li><li>Tome 15 g de carboidrato rápido:</li><li>1 copo água + 1 colher açúcar ou 3 balas ou 3 sachês mel ou ½ copo suco</li><li>Espere 15 min e reavalie</li></ul><br><strong>Hipoglicemia grave (&lt; 50 mg/dL)</strong><ul><li>Tontura, fraqueza, visão embaçada, desmaio</li><li>Tome 30 g de carboidrato rápido ou chame ajuda</li></ul>🚨 Se não melhorar ou não conseguir se alimentar, ligue 192 ou vá ao Pronto Atendimento.',
+    t: '<strong>Hipoglicemia leve:</strong><br>15 g de carboidrato rápido (água com açúcar, suco, bala, mel).<br><br><strong>Hipoglicemia grave:</strong><br>Se não melhorar ou desmaiar: chame 192.',
     em: true,
-    o: [{ id: 'start', label: 'Voltar ao início' }]
+    o: [
+      { id: 'avaliacao_intro', label: 'Avaliar atendimento' },
+      { id: 'start', label: 'Voltar ao início' }
+    ]
   },
 
-  // 🐍 FLUXO – ANIMAIS PEÇONHENTOS (COBRA / ESCORPIÃO)
+  /* ============================================================
+     🐍 FLUXO COMPLETO – ANIMAIS PEÇONHENTOS
+  ============================================================ */
+
   ven_intro: {
-    t: 'Urgência e Emergência — Animais peçonhentos.<br><br>Você sofreu acidente envolvendo cobra/serpente?',
+    t: 'Urgência e Emergência — Animais peçonhentos.<br><br>Foi acidente com cobra?',
     o: [
       { id: 'ven_snake_yes', label: 'Sim' },
       { id: 'ven_snake_no', label: 'Não' }
@@ -366,7 +404,7 @@ const flow = {
   },
 
   ven_identify_yes: {
-    t: 'Identifique características (se possível): dentição, pupilas, fosseta loreal, cauda lisa, escamas eriçadas, guizo.<br><br>Classifique o acidente:',
+    t: 'Observe características: pupila, fosseta loreal, dentição, cauda, guizo.<br><br>Classifique o acidente:',
     o: [
       { id: 'ven_class_grave', label: 'Grave' },
       { id: 'ven_class_mod', label: 'Moderado' },
@@ -375,31 +413,43 @@ const flow = {
   },
 
   ven_identify_no: {
-    t: 'Se não identificar o animal, mantenha observação.<br>Se houver dor intensa, inchaço ou sinais sistêmicos (sudorese, vômitos persistentes, salivação excessiva, agitação, arritmia, dificuldade respiratória ou alterações neurológicas), procure atendimento pela SAMU 192 ou Pronto Atendimento 24h (Rua L-2, 190, Interlagos).',
+    t: 'Se não identificar o animal, mantenha observação.<br><br>Se houver dor intensa, inchaço ou sinais sistêmicos (sudorese, vômitos persistentes, salivação excessiva, agitação, arritmia, dificuldade respiratória ou alterações neurológicas), procure atendimento pela SAMU 192 ou Pronto Atendimento 24h (Rua L-2, 190).',
     em: true,
-    o: [{ id: 'start', label: 'Voltar ao início' }]
+    o: [
+      { id: 'avaliacao_intro', label: 'Avaliar atendimento' },
+      { id: 'start', label: 'Voltar ao início' }
+    ]
   },
 
   ven_class_grave: {
-    t: '🚨🚨🚨 Isso é uma emergência!<br>Procure atendimento IMEDIATO: SAMU 192 ou Pronto Atendimento 24h — Rua L-2, 190, Interlagos.<br><br><strong>Sinais de alarme:</strong> Inchaço, bolhas, sangramento, hipotensão, dificuldade respiratória, convulsões.',
+    t: '🚨🚨🚨 Emergência GRAVE!<br>Procure IMEDIATAMENTE o SAMU 192 ou Pronto Atendimento 24h.<br><br>Sinais de alarme: inchaço, bolhas, sangramento, convulsões.',
     em: true,
-    o: [{ id: 'start', label: 'Voltar ao início' }]
+    o: [
+      { id: 'avaliacao_intro', label: 'Avaliar atendimento' },
+      { id: 'start', label: 'Voltar ao início' }
+    ]
   },
 
   ven_class_mod: {
-    t: '🚨🚨 Isso é uma emergência!<br>Procure atendimento URGENTE: SAMU 192 ou Pronto Atendimento 24h — Rua L-2, 190, Interlagos.',
+    t: '🚨🚨 Emergência MODERADA!<br>Procure atendimento urgente: SAMU 192 ou PA 24h.',
     em: true,
-    o: [{ id: 'start', label: 'Voltar ao início' }]
+    o: [
+      { id: 'avaliacao_intro', label: 'Avaliar atendimento' },
+      { id: 'start', label: 'Voltar ao início' }
+    ]
   },
 
   ven_class_mild: {
-    t: '🚨 Isso é uma urgência.<br>Procure o pronto-socorro mais próximo: Pronto Atendimento 24h — Rua L-2, 190, Interlagos.',
+    t: '🚨 Urgência LEVE.<br>Procure o Pronto Atendimento 24h.',
     em: true,
-    o: [{ id: 'start', label: 'Voltar ao início' }]
+    o: [
+      { id: 'avaliacao_intro', label: 'Avaliar atendimento' },
+      { id: 'start', label: 'Voltar ao início' }
+    ]
   },
 
   ven_snake_no: {
-    t: 'Você sofreu acidente envolvendo escorpião?',
+    t: 'Foi acidente com escorpião?',
     o: [
       { id: 'scorp_grave', label: 'Grave' },
       { id: 'scorp_mod', label: 'Moderado' },
@@ -409,23 +459,68 @@ const flow = {
   },
 
   scorp_grave: {
-    t: '🚨🚨🚨 Isso é uma emergência!<br>Dor intensa, salivação excessiva, sudorese, vômitos repetidos, sonolência, dificuldade respiratória, convulsões.<br><br>Procure atendimento IMEDIATO: SAMU 192 ou Pronto Atendimento 24h — Rua L-2, 190, Interlagos.',
+    t: '🚨🚨🚨 Emergência GRAVE!<br>Dor intensa, salivação, sudorese, vômitos repetidos, dificuldade respiratória.<br>Procure SAMU 192 ou PA 24h.',
     em: true,
-    o: [{ id: 'start', label: 'Voltar ao início' }]
+    o: [
+      { id: 'avaliacao_intro', label: 'Avaliar atendimento' },
+      { id: 'start', label: 'Voltar ao início' }
+    ]
   },
 
   scorp_mod: {
-    t: '🚨🚨 Emergência moderada!<br>Dor local intensa, sudorese, náuseas, vômitos, agitação, taquicardia.<br><br>Procure atendimento URGENTE: SAMU 192 ou Pronto Atendimento 24h — Rua L-2, 190, Interlagos.',
+    t: '🚨 Emergência MODERADA!<br>Dor forte, sudorese, náuseas, agitação.<br>Procure atendimento rapidamente.',
     em: true,
+    o: [
+      { id: 'avaliacao_intro', label: 'Avaliar atendimento' },
+      { id: 'start', label: 'Voltar ao início' }
+    ]
+  },
+
+  scorp_mild: {
+    t: '🚨 Urgência LEVE.<br>Dor local, formigamento, leve inchaço.<br>Procure o Pronto Atendimento.',
+    em: true,
+    o: [
+      { id: 'avaliacao_intro', label: 'Avaliar atendimento' },
+      { id: 'start', label: 'Voltar ao início' }
+    ]
+  },
+
+  /* ============================================================
+     ⭐ AVALIAÇÃO DO ATENDIMENTO
+  ============================================================ */
+
+  avaliacao_intro: {
+    t: '⭐ Para concluirmos, como você avalia o atendimento?',
+    o: [
+      { id: 'avaliacao_otimo', label: '😊 Ótimo' },
+      { id: 'avaliacao_bom', label: '🙂 Bom' },
+      { id: 'avaliacao_medio', label: '😐 Regular' },
+      { id: 'avaliacao_ruim', label: '🙁 Ruim' }
+    ]
+  },
+
+  avaliacao_otimo: {
+    t: 'Fico feliz em saber disso! 💙 Estou sempre aqui para ajudar.',
     o: [{ id: 'start', label: 'Voltar ao início' }]
   },
 
-   scorp_mild: {
-    t: '🚨 Urgência leve.<br>Dor local, formigamento, leve inchaço.<br><br>Procure o Pronto Atendimento 24h — Rua L-2, 190, Interlagos.',
-    em: true,
+  avaliacao_bom: {
+    t: 'Que bom! 😊 Obrigado pelo seu feedback!',
+    o: [{ id: 'start', label: 'Voltar ao início' }]
+  },
+
+  avaliacao_medio: {
+    t: 'Obrigado pelo feedback! Vou buscar melhorar para te ajudar mais.',
+    o: [{ id: 'start', label: 'Voltar ao início' }]
+  },
+
+  avaliacao_ruim: {
+    t: 'Sinto muito 😔 Seu feedback é muito importante para melhorar nosso atendimento.',
     o: [{ id: 'start', label: 'Voltar ao início' }]
   }
+
 };
+
 
 // ===== FUNÇÕES FINAIS =====
 function sel(id) {
